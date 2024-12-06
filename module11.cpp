@@ -8,6 +8,7 @@
 #include <random>
 #include <ctime>
 #include <iomanip>
+#include <unordered_set>
 using namespace std;
 const int maximum_entries = 108;
 int ISBN[maximum_entries] = {};
@@ -127,13 +128,15 @@ public:
     int regnumber;
     string nameofbook;
     int ISBN;
+    string contactNumber;
     Nodeforborrowedbooks *next;
 
-    Nodeforborrowedbooks(int regnumber, string nameofbook, int ISBN)
+    Nodeforborrowedbooks(int regnumber, string nameofbook, int ISBN, string contactNumber)
     {
         this->regnumber = regnumber;
         this->nameofbook = nameofbook;
         this->ISBN = ISBN;
+        this->contactNumber = contactNumber;
         next = nullptr;
     }
 };
@@ -186,11 +189,17 @@ public:
         Nodeforborrowedbooks *temp = top;
         while (temp)
         {
-            Sleep(200);
-            cout << "Reg-Number: " << temp->regnumber << endl;
-            cout << "Name of Book: " << temp->nameofbook << endl;
-            cout << "ISBN: " << temp->ISBN << endl;
-            cout << "Returned Deadline: " << generateRandomTimeOneDayAhead() << endl;
+            Sleep(500);
+            cout << "\t\t\tYour reciept is as follows" << endl;
+            cout << endl;
+            Sleep(500);
+            cout << "\t\t\tContact-Number: " << temp->contactNumber << endl;
+            cout << "\t\t\tReg-Number: " << temp->regnumber << endl;
+            cout << "\t\t\tName of Book: " << temp->nameofbook << endl;
+            cout << "\t\t\tISBN: " << temp->ISBN << endl;
+            cout << "\t\t\tReturned Deadline: " << generateRandomTimeOneDayAhead() << endl;
+            cout << "\t\t\tPlease be mindful to return before the deadline" << endl;
+            cout << endl;
             temp = temp->next;
         }
     }
@@ -200,9 +209,9 @@ public:
         cout << "Height: " << height << endl;
     }
 
-    void push(int regnumber, string nameofbook, int ISBN)
+    void push(int regnumber, string nameofbook, int ISBN, string contactNumber)
     {
-        Nodeforborrowedbooks *newNode = new Nodeforborrowedbooks(regnumber, nameofbook, ISBN);
+        Nodeforborrowedbooks *newNode = new Nodeforborrowedbooks(regnumber, nameofbook, ISBN, contactNumber);
         newNode->next = top;
         top = newNode;
         height++;
@@ -219,10 +228,11 @@ public:
     string location;
     string ip_address;
     bool internet_access;
+    int serialNumber;
     NodeofComputerInfo *next;
 
-    NodeofComputerInfo(string type, string location, string ip_address, bool internet_access)
-        : type(type), location(location), ip_address(ip_address), internet_access(internet_access), next(nullptr) {}
+    NodeofComputerInfo(int serialNumber, string type, string location, string ip_address, bool internet_access)
+        : serialNumber(serialNumber), type(type), location(location), ip_address(ip_address), internet_access(internet_access), next(nullptr) {}
 };
 
 class ComputerInfoLinkedList
@@ -249,15 +259,16 @@ public:
     void printList()
     {
         NodeofComputerInfo *temp = head;
-        while (temp != nullptr)
+        while (temp)
         {
-            Sleep(1000);
+            // Sleep(100);
             cout << "---------------------------" << endl;
-            cout << "|" << " Location: " << temp->location << "    |" << endl;
-            cout << "|" << " Type: " << temp->type << "                 |" << endl;
-            cout << "|" << " IP Address: " << temp->ip_address << "   |" << endl;
-            cout << "|" << " Internet Access: " << (temp->internet_access ? "Yes" : "No") << "       |" << endl; // Print internet access
-            cout << "---------------------------" << endl;                                                       // Separator for readability
+            cout << "|" << " Serial-Number: " << temp->serialNumber << endl;
+            cout << "|" << " Location: " << temp->location << endl;
+            cout << "|" << " Type: " << temp->type << endl;
+            cout << "|" << " IP Address: " << temp->ip_address << endl;
+            cout << "|" << " Internet Access: " << (temp->internet_access ? "Yes" : "No") << endl; // Print internet access
+            cout << "---------------------------" << endl;                                         // Separator for readability
             temp = temp->next;
         }
     }
@@ -267,9 +278,9 @@ public:
         cout << "Length: " << length << endl;
     }
 
-    void append(string type, string location, string ip_address, bool internet_access)
+    void append(int serialNumber, string type, string location, string ip_address, bool internet_access)
     {
-        NodeofComputerInfo *newNode = new NodeofComputerInfo(type, location, ip_address, internet_access);
+        NodeofComputerInfo *newNode = new NodeofComputerInfo(serialNumber, type, location, ip_address, internet_access);
         if (length == 0)
         {
             head = newNode;
@@ -355,6 +366,102 @@ public:
             temp = head;
         }
     }
+    void deleteHead()
+    {
+        if (head == nullptr)
+        {
+            cout << "The list is empty. No head to delete.\n";
+            return;
+        }
+
+        NodeforBookDetails *temp = head;
+        head = head->next;
+
+        if (head)
+        {
+            head->prev = nullptr;
+        }
+        else
+        {
+            tail = nullptr; // If the list becomes empty
+        }
+
+        delete temp;
+        length--;
+    }
+
+    void deleteTail()
+    {
+        if (tail == nullptr)
+        {
+            cout << "The list is empty. No tail to delete.\n";
+            return;
+        }
+
+        NodeforBookDetails *temp = tail;
+        tail = tail->prev;
+
+        if (tail)
+        {
+            tail->next = nullptr;
+        }
+        else
+        {
+            head = nullptr; // If the list becomes empty
+        }
+
+        delete temp;
+        length--;
+    }
+
+    void deleteMiddleNode(NodeforBookDetails *node)
+    {
+        if (node == nullptr)
+        {
+            cout << "Invalid node to delete.\n";
+            return;
+        }
+
+        node->prev->next = node->next;
+        node->next->prev = node->prev;
+
+        delete node;
+        length--;
+    }
+
+    void deleteBookByISBN(int ISBN)
+    {
+        if (length == 0)
+        {
+            cout << "The list is empty. No books to delete.\n";
+            return;
+        }
+
+        NodeforBookDetails *temp = head;
+
+        while (temp)
+        {
+            if (temp->ISBN == ISBN)
+            {
+                if (temp == head)
+                {
+                    deleteHead();
+                }
+                else if (temp == tail)
+                {
+                    deleteTail();
+                }
+                else
+                {
+                    deleteMiddleNode(temp);
+                }
+                return;
+            }
+            temp = temp->next;
+        }
+
+        cout << "Book with ISBN " << ISBN << " not found in the list.\n";
+    }
 
     void printListBooks()
     {
@@ -362,10 +469,10 @@ public:
         while (temp != nullptr)
         {
             Sleep(100);
-            cout << "|Serail Number: " << temp->SerialNumber << endl;
-            cout << "|ISBN: " << temp->ISBN << endl;
-            cout << "|Book_Details: " << temp->book_details << endl;
-            cout << "|Quantity: " << temp->quantity << endl;
+            cout << "\t\t\t|Serail Number: " << temp->SerialNumber << endl;
+            cout << "\t\t\t|ISBN: " << temp->ISBN << endl;
+            cout << "\t\t\t|Book_Details: " << temp->book_details << endl;
+            cout << "\t\t\t|Quantity: " << temp->quantity << endl;
             cout << endl;
             temp = temp->next;
         }
@@ -388,24 +495,6 @@ public:
         length++;
     }
 
-    void deleteLast()
-    {
-        if (length == 0)
-            return;
-        NodeforBookDetails *temp = tail;
-        if (length == 1)
-        {
-            head = nullptr;
-            tail = nullptr;
-        }
-        else
-        {
-            tail = tail->prev;
-            tail->next = nullptr;
-        }
-        delete temp;
-        length--;
-    }
     void prependintobooks(int SerialNumber, int ISBN, string book_details, int quantity)
     {
         NodeforBookDetails *newNode = new NodeforBookDetails(SerialNumber, ISBN, book_details, quantity);
@@ -438,10 +527,22 @@ public:
 };
 void populateArray()
 {
+    // this is to ensure that a new ISBN is generated each time
+    unordered_set<int> usedISBNs; // Set to track unique ISBNs
+    srand(time(0));               // Seed for random number generation
+
     for (int i = 0; i < maximum_entries; i++)
     {
-        ISBN[i] = (rand() % 1001) + 1000;
-        quantity[i] = (rand() % 5) + 1;
+        int newISBN;
+        do
+        {
+            newISBN = (rand() % 1001) + 1000; // Generate ISBN in the range [1000, 2000]
+        } while (usedISBNs.find(newISBN) != usedISBNs.end()); // Repeat if ISBN is already used
+
+        ISBN[i] = newISBN;
+        usedISBNs.insert(newISBN); // Add to the set of used ISBNs
+
+        quantity[i] = (rand() % 5) + 1; // Random quantity in the range [1, 5]
     }
 }
 class NodeOfBSTRegno
@@ -682,7 +783,7 @@ void Library()
         {
             hasinternetAccess = true;
         }
-        CI->append("Mac", "Second Floor", "192.168.1.1", hasinternetAccess);
+        CI->append(i + 1, "Mac", "Second Floor", "192.168.1.1", hasinternetAccess);
     }
     // the below code will populate for windows computers
     for (int i = 0; i < maximum_computers_windows; i++)
@@ -692,7 +793,7 @@ void Library()
         {
             hasinternetAccess = true;
         }
-        CI->append("Windows", "Third Floor", "192.168.1.1", true);
+        CI->append(maximum_computers_mac + i + 1, "Windows", "Third Floor", "192.168.1.1", true);
     }
     LinkedListForFaculty *LL = new LinkedListForFaculty();
     StackforBorrowedbooks *SS = new StackforBorrowedbooks();
@@ -704,6 +805,10 @@ void Library()
     int adminPortal;
     string Faculty;
     int ISBN;
+    string phonenumber;
+    char choiceofcontinuity;
+    string typeofcomputer;
+    char choiceofInternet;
     cout << endl;
     cout << "\t\t\t\t\t\tLibrary Management System" << endl;
     Sleep(1000);
@@ -721,7 +826,8 @@ void Library()
     cout << "2023598\t\t";
     cout << "DataScience" << endl;
     Sleep(1000);
-    cout << "If you are an admin then please press 1 to access admin portal: ";
+    cout << endl;
+    cout << "\t\t\tIf you are an admin then please press 1 to access admin portal otherisw press anynumber: ";
     cin >> adminPortal;
     if (adminPortal == 1)
     {
@@ -789,39 +895,64 @@ void Library()
         // cin >> Faculty;
         // LL->append(Faculty);
 
-        cout << "Please Leave Your Bags In the designated Space" << endl;
-        cout << "Please take care of your belongings The Administration will not be responsible for any losses" << endl;
+        cout << "\t\t\tPlease Leave Your Bags In the designated Space" << endl;
+        cout << "\t\t\tPlease take care of your belongings The Administration will not be responsible for any losses" << endl;
         Sleep(1000);
         cout << endl;
-        cout << "Please Enter Your reg number: ";
+        cout << "\t\t\tPlease Enter Your reg number: ";
         cin >> regno;
         cout << endl;
         if (mybst->containsRegno(regno))
         {
             Sleep(1000);
-            cout << "Regno successfully Found" << endl;
+            cout << "\t\t\tRegno successfully Found" << endl;
             cout << endl;
             Sleep(1000);
-            cout << "To Browse Books press 1 " << endl;
-            cout << "To Browse Computer Resources press 2 " << endl;
+            cout << "\t\t\tTo Browse Books press 1 " << endl;
+            cout << "\t\t\tTo Browse Computer Resources press 2 " << endl;
+            cout << "\t\t\tChoice: ";
             cin >> choice;
+            Sleep(1000);
             if (choice == 1)
             {
-                cout << "Displaying You all the books we have" << endl;
+                cout << endl;
+                cout << "\t\t\tDisplaying You all the books we have" << endl;
                 Sleep(1000);
+                cout << endl;
                 myDoublyLinked->printListBooks();
                 Sleep(1000);
-                cout << "Please Enter The ISBN Number of the book which you want: ";
+                cout << "\t\t\tPlease Enter The ISBN Number of the book which you want: ";
                 cin >> ISBN;
+                // getting the name from the list
                 string name = myDoublyLinked->getName(ISBN);
+                Sleep(500);
+                cout << "\t\t\tPlease Enter Your Contact Number: ";
+                cin >> phonenumber;
                 // now pushing into the stack the book the user has borrowed
-                SS->push(regno, name, ISBN);
+                SS->push(regno, name, ISBN, phonenumber);
+                SS->printStack();
+                myDoublyLinked->deleteBookByISBN(ISBN);
+                Sleep(5000);
+                cout << "\t\t\tPrinting The Catalouge After Update" << endl;
+                Sleep(1000);
+                myDoublyLinked->printListBooks();
+                cout << "Do you want anyother assistance ? (Y/N): ";
+                cin >> choiceofcontinuity;
+                if (choiceofcontinuity == 'N' && choiceofcontinuity == 'n')
+                {
+                    cout << "Thank You So Much" << endl;
+                }
             }
             if (choice == 2)
             {
-                cout << "Displaying You all computer resources we have" << endl;
+                cout << "\t\t\tDisplaying You all computer resources we have" << endl;
                 Sleep(1000);
                 CI->printList();
+                Sleep(1000);
+                cout << "Please Enter The Type of Computer you would like to use: ";
+                cin >> typeofcomputer;
+                cout << "Do You require Internet Access ? (Y/N): ";
+                cin >> choiceofInternet;
             }
         }
         else
@@ -841,6 +972,7 @@ int main()
     populateArray();
 
     system("CLS");
+    // this is the main driver function
     Library();
     return 0;
 }
