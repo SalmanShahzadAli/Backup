@@ -120,8 +120,122 @@ string book_details[maximum_entries] = {"I Know Why the Caged Bird Sings - Maya 
                                         "Homo Deus: A Brief History of Tomorrow – Yuval Noah Harari",
                                         "The Immortal Life of Henrietta Lacks – Rebecca Skloot",
                                         "Quiet: The Power of Introverts in a World That Can't Stop Talking – Susan Cain"};
-int quantity[maximum_entries] = {};
 
+class NodeforComputerAllotment
+{
+public:
+    int regnumber;
+    string computertype;
+    string contact;
+    int duration;
+    NodeforComputerAllotment *next;
+
+public:
+    NodeforComputerAllotment(int regnumber, string computertype, int contact, int duration)
+    {
+        this->computertype = computertype;
+        this->contact = contact;
+        this->duration = duration;
+        this->regnumber = regnumber;
+        next = nullptr;
+    }
+};
+class LinkedListforcomputerAllotment
+{
+private:
+    NodeforComputerAllotment *head;
+    NodeforComputerAllotment *tail;
+    int length;
+
+public:
+    LinkedListforcomputerAllotment()
+    {
+        head = nullptr;
+        tail = nullptr;
+    }
+
+    ~LinkedListforcomputerAllotment()
+    {
+        NodeforComputerAllotment *temp = head;
+        while (head)
+        {
+            head = head->next;
+            delete temp;
+            temp = head;
+        }
+    }
+
+    // void printList()
+    // {
+    //     NodeforComputerAllotment *temp = head;
+    //     while (temp != nullptr)
+    //     {
+    //         cout << temp->value << endl;
+    //         temp = temp->next;
+    //     }
+    // }
+
+    void append(int regnumber, string computertype, int contact, int duration)
+    {
+        NodeforComputerAllotment *newNode = new NodeforComputerAllotment(regnumber, computertype, contact, duration);
+        if (length == 0)
+        {
+            head = newNode;
+            tail = newNode;
+        }
+        else
+        {
+            tail->next = newNode;
+            tail = newNode;
+        }
+        length++;
+    }
+
+    void deleteLast()
+    {
+        if (length == 0)
+            return;
+        NodeforComputerAllotment *temp = head;
+        if (length == 1)
+        {
+            head = nullptr;
+            tail = nullptr;
+        }
+        else
+        {
+            NodeforComputerAllotment *pre = head;
+            while (temp->next)
+            {
+                pre = temp;
+                temp = temp->next;
+            }
+            tail = pre;
+            tail->next = nullptr;
+        }
+        delete temp;
+        length--;
+    }
+
+    void deleteFirst()
+    {
+        if (length == 0)
+        {
+            return;
+        }
+        NodeforComputerAllotment *temp = head;
+        if (length == 1)
+        {
+            head = nullptr;
+            tail = nullptr;
+        }
+        else
+        {
+            head = head->next;
+        }
+        delete temp;
+        length--;
+    }
+};
 class Nodeforborrowedbooks
 {
 public:
@@ -293,7 +407,25 @@ public:
         }
         length++;
     }
-
+    void deleteFirst()
+    {
+        if (length == 0)
+        {
+            return;
+        }
+        NodeofComputerInfo *temp = head;
+        if (length == 1)
+        {
+            head = nullptr;
+            tail = nullptr;
+        }
+        else
+        {
+            head = head->next;
+        }
+        delete temp;
+        length--;
+    }
     void deleteLast()
     {
         if (length == 0)
@@ -325,16 +457,14 @@ public:
     int SerialNumber;
     int ISBN;
     string book_details;
-    int quantity;
     NodeforBookDetails *next;
     NodeforBookDetails *prev;
 
-    NodeforBookDetails(int SerialNumber, int ISBN, string book_details, int quantity)
+    NodeforBookDetails(int SerialNumber, int ISBN, string book_details)
     {
         this->SerialNumber = SerialNumber;
         this->ISBN = ISBN;
         this->book_details = book_details;
-        this->quantity = quantity;
         this->next = nullptr;
         this->prev = nullptr;
     }
@@ -348,9 +478,9 @@ private:
     int length;
 
 public:
-    DoublyLinkedListForBooksStorage(int SerialNumber, int ISBN, string book_details, int quantity)
+    DoublyLinkedListForBooksStorage(int SerialNumber, int ISBN, string book_details)
     {
-        NodeforBookDetails *newNode = new NodeforBookDetails(SerialNumber, ISBN, book_details, quantity);
+        NodeforBookDetails *newNode = new NodeforBookDetails(SerialNumber, ISBN, book_details);
         head = newNode;
         tail = newNode;
         length = 1;
@@ -472,15 +602,14 @@ public:
             cout << "\t\t\t|Serail Number: " << temp->SerialNumber << endl;
             cout << "\t\t\t|ISBN: " << temp->ISBN << endl;
             cout << "\t\t\t|Book_Details: " << temp->book_details << endl;
-            cout << "\t\t\t|Quantity: " << temp->quantity << endl;
             cout << endl;
             temp = temp->next;
         }
     }
 
-    void appendintoBooks(int SerialNumber, int ISBN, string book_details, int quantity)
+    void appendintoBooks(int SerialNumber, int ISBN, string book_details)
     {
-        NodeforBookDetails *newNode = new NodeforBookDetails(SerialNumber, ISBN, book_details, quantity);
+        NodeforBookDetails *newNode = new NodeforBookDetails(SerialNumber, ISBN, book_details);
         if (length == 0)
         {
             head = newNode;
@@ -495,9 +624,9 @@ public:
         length++;
     }
 
-    void prependintobooks(int SerialNumber, int ISBN, string book_details, int quantity)
+    void prependintobooks(int SerialNumber, int ISBN, string book_details)
     {
-        NodeforBookDetails *newNode = new NodeforBookDetails(SerialNumber, ISBN, book_details, quantity);
+        NodeforBookDetails *newNode = new NodeforBookDetails(SerialNumber, ISBN, book_details);
         if (length == 0)
         {
             head = newNode;
@@ -541,8 +670,6 @@ void populateArray()
 
         ISBN[i] = newISBN;
         usedISBNs.insert(newISBN); // Add to the set of used ISBNs
-
-        quantity[i] = (rand() % 5) + 1; // Random quantity in the range [1, 5]
     }
 }
 class NodeOfBSTRegno
@@ -770,10 +897,10 @@ void Library()
     {
         mybst->insert(regnumber + i);
     }
-    DoublyLinkedListForBooksStorage *myDoublyLinked = new DoublyLinkedListForBooksStorage(0, ISBN[0], book_details[0], quantity[0]);
+    DoublyLinkedListForBooksStorage *myDoublyLinked = new DoublyLinkedListForBooksStorage(0, ISBN[0], book_details[0]);
     for (int i = 1; i < maximum_entries; i++)
     {
-        myDoublyLinked->appendintoBooks(i, ISBN[i], book_details[i], quantity[i]);
+        myDoublyLinked->appendintoBooks(i, ISBN[i], book_details[i]);
     }
     ComputerInfoLinkedList *CI = new ComputerInfoLinkedList();
     for (int i = 0; i < maximum_computers_mac; i++)
@@ -809,6 +936,10 @@ void Library()
     char choiceofcontinuity;
     string typeofcomputer;
     char choiceofInternet;
+    string borrowedBook;
+    int ISBNnumber;
+    int SerailNumber;
+    int duration;
     cout << endl;
     cout << "\t\t\t\t\t\tLibrary Management System" << endl;
     Sleep(1000);
@@ -910,9 +1041,24 @@ void Library()
             Sleep(1000);
             cout << "\t\t\tTo Browse Books press 1 " << endl;
             cout << "\t\t\tTo Browse Computer Resources press 2 " << endl;
+            cout << "\t\t\tTo Return a borrowed book press 3: " << endl;
             cout << "\t\t\tChoice: ";
             cin >> choice;
             Sleep(1000);
+            // the below code is for validation
+            while (choice != 1 && choice != 2 && choice != 3)
+            {
+                Sleep(1000);
+                cout << "\t\t\tInvalid choice entered" << endl;
+                Sleep(1000);
+                cout << "\t\t\tPlease Enter A Valid Choice" << endl;
+                Sleep(1000);
+                cout << "\t\t\tTo Browse Books press 1 " << endl;
+                cout << "\t\t\tTo Browse Computer Resources press 2 " << endl;
+                cout << "\t\t\tTo Return a borrowed book press 3: " << endl;
+                cout << "\t\t\tChoice: ";
+                cin >> choice;
+            }
             if (choice == 1)
             {
                 cout << endl;
@@ -934,9 +1080,10 @@ void Library()
                 myDoublyLinked->deleteBookByISBN(ISBN);
                 Sleep(5000);
                 cout << "\t\t\tPrinting The Catalouge After Update" << endl;
+                cout << endl;
                 Sleep(1000);
                 myDoublyLinked->printListBooks();
-                cout << "Do you want anyother assistance ? (Y/N): ";
+                cout << "\t\t\tDo you requie any other assistance ? (Y/N): ";
                 cin >> choiceofcontinuity;
                 if (choiceofcontinuity == 'N' && choiceofcontinuity == 'n')
                 {
@@ -953,6 +1100,23 @@ void Library()
                 cin >> typeofcomputer;
                 cout << "Do You require Internet Access ? (Y/N): ";
                 cin >> choiceofInternet;
+                cout << "Please Enter The Duration For Which You want to use ? ";
+                cin >> duration;
+            }
+            if (choice == 3)
+            {
+                Sleep(1000);
+                cout << endl;
+                cout << "\t\t\tPrinting Catalouge Off Borrowed Books" << endl;
+                Sleep(1000);
+                SS->printStack();
+                cout << "\t\t\tPlease Enter The Name For Borrwed Book: ";
+                cin >> borrowedBook;
+                cout << "\t\t\tPlease Enter The Serial Number: ";
+                cin >> SerailNumber;
+                cout << "\t\t\tPlease Enter The ISBN number: ";
+                cin >> ISBNnumber;
+                myDoublyLinked->appendintoBooks(SerailNumber, ISBN, borrowedBook);
             }
         }
         else
@@ -967,12 +1131,19 @@ void Library()
 }
 int main()
 {
+    char choice;
     srand(static_cast<unsigned int>(time(0))); // Seed with current time
     // the below function will populate the array this is server side thing to handle.
     populateArray();
 
     system("CLS");
     // this is the main driver function
-    Library();
+    do
+    {
+        Library();
+        cout << "\t\t\tDo you wish to avail anything else from library (Y/N): " << endl;
+        cin >> choice;
+    } while (choice != 'N' && choice != 'n');
+
     return 0;
 }
