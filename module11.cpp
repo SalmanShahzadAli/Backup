@@ -5,6 +5,9 @@
 #include <ctime>
 #include <cstdlib> // For rand() and srand()
 #include <queue>
+#include <random>
+#include <ctime>
+#include <iomanip>
 using namespace std;
 const int maximum_entries = 108;
 int ISBN[maximum_entries] = {};
@@ -118,6 +121,94 @@ string book_details[maximum_entries] = {"I Know Why the Caged Bird Sings - Maya 
                                         "Quiet: The Power of Introverts in a World That Can't Stop Talking – Susan Cain"};
 int quantity[maximum_entries] = {};
 
+class Nodeforborrowedbooks
+{
+public:
+    int regnumber;
+    string nameofbook;
+    int ISBN;
+    Nodeforborrowedbooks *next;
+
+    Nodeforborrowedbooks(int regnumber, string nameofbook, int ISBN)
+    {
+        this->regnumber = regnumber;
+        this->nameofbook = nameofbook;
+        this->ISBN = ISBN;
+        next = nullptr;
+    }
+};
+
+class StackforBorrowedbooks
+{
+private:
+    Nodeforborrowedbooks *top;
+    int height;
+
+public:
+    StackforBorrowedbooks()
+    {
+        top = nullptr;
+    }
+
+    ~StackforBorrowedbooks()
+    {
+        Nodeforborrowedbooks *temp = top;
+        while (top)
+        {
+            top = top->next;
+            delete temp;
+            temp = top;
+        }
+    }
+
+    void printStack()
+    {
+        // Helper lambda to generate a random time one day ahead
+        auto generateRandomTimeOneDayAhead = []() -> std::string
+        {
+            std::time_t currentTime = std::time(nullptr);         // Get current time
+            std::time_t nextDayTime = currentTime + 24 * 60 * 60; // Add 24 hours (1 day)
+
+            // Random offset between -6 and +6 hours
+            std::random_device rd;
+            std::mt19937 gen(rd());
+            std::uniform_int_distribution<int> offsetDist(-6 * 60 * 60, 6 * 60 * 60);
+            int randomOffset = offsetDist(gen);
+
+            nextDayTime += randomOffset; // Apply the offset
+
+            // Format the time as a string
+            std::tm *localTime = std::localtime(&nextDayTime);
+            std::ostringstream oss;
+            oss << std::put_time(localTime, "%Y-%m-%d %H:%M:%S");
+            return oss.str();
+        };
+        Nodeforborrowedbooks *temp = top;
+        while (temp)
+        {
+            Sleep(200);
+            cout << "Reg-Number: " << temp->regnumber << endl;
+            cout << "Name of Book: " << temp->nameofbook << endl;
+            cout << "ISBN: " << temp->ISBN << endl;
+            cout << "Returned Deadline: " << generateRandomTimeOneDayAhead() << endl;
+            temp = temp->next;
+        }
+    }
+
+    void getHeight()
+    {
+        cout << "Height: " << height << endl;
+    }
+
+    void push(int regnumber, string nameofbook, int ISBN)
+    {
+        Nodeforborrowedbooks *newNode = new Nodeforborrowedbooks(regnumber, nameofbook, ISBN);
+        newNode->next = top;
+        top = newNode;
+        height++;
+    }
+};
+
 const int maximum_computers_mac = 50;
 const int maximum_computers_windows = 50;
 
@@ -162,11 +253,11 @@ public:
         {
             Sleep(1000);
             cout << "---------------------------" << endl;
-            cout <<"|"<< " Location: " << temp->location << "    |"<<endl;
-            cout <<"|"<< " Type: " << temp->type << "                 |" <<endl;
-            cout <<"|"<< " IP Address: " << temp->ip_address <<"   |"<< endl;
-            cout <<"|"<< " Internet Access: " << (temp->internet_access ? "Yes" : "No") << "       |"<<endl; // Print internet access
-            cout << "---------------------------" << endl;                                    // Separator for readability
+            cout << "|" << " Location: " << temp->location << "    |" << endl;
+            cout << "|" << " Type: " << temp->type << "                 |" << endl;
+            cout << "|" << " IP Address: " << temp->ip_address << "   |" << endl;
+            cout << "|" << " Internet Access: " << (temp->internet_access ? "Yes" : "No") << "       |" << endl; // Print internet access
+            cout << "---------------------------" << endl;                                                       // Separator for readability
             temp = temp->next;
         }
     }
@@ -270,7 +361,7 @@ public:
         NodeforBookDetails *temp = head;
         while (temp != nullptr)
         {
-            Sleep(500);
+            Sleep(100);
             cout << "|Serail Number: " << temp->SerialNumber << endl;
             cout << "|ISBN: " << temp->ISBN << endl;
             cout << "|Book_Details: " << temp->book_details << endl;
@@ -330,6 +421,19 @@ public:
             head = newNode;
         }
         length++;
+    }
+    string getName(int ISBN)
+    {
+        NodeforBookDetails *temp = head;
+        while (temp)
+        {
+            if (temp->ISBN == ISBN)
+            {
+                return temp->book_details;
+            }
+            temp = temp->next;
+        }
+        return "";
     }
 };
 void populateArray()
@@ -442,7 +546,7 @@ public:
         {
             currentNode = myQueue.front();
             myQueue.pop();
-            cout <<currentNode->value << endl;
+            cout << currentNode->value << endl;
             if (currentNode->left)
             {
                 myQueue.push(currentNode->left);
@@ -457,7 +561,7 @@ public:
     void DFSPreOrder(NodeOfBSTRegno *currentNode)
     {
         Sleep(500);
-        cout <<currentNode->value << endl;
+        cout << currentNode->value << endl;
         if (currentNode->left != nullptr)
         {
             DFSPreOrder(currentNode->left);
@@ -481,7 +585,7 @@ public:
         {
             DFSPostOrder(currentNode->right);
         }
-        cout <<currentNode->value << endl;
+        cout << currentNode->value << endl;
     }
 
     void DFSPostOrder() { DFSPostOrder(root); }
@@ -558,7 +662,7 @@ public:
 };
 void Library()
 {
-    BinarySearchTreeRegno* mybst = new BinarySearchTreeRegno();
+    BinarySearchTreeRegno *mybst = new BinarySearchTreeRegno();
     // the below code will store 700 regnumbers in the bst.
     int regnumber = 2023000;
     for (int i = 0; i <= 700; i++)
@@ -570,7 +674,7 @@ void Library()
     {
         myDoublyLinked->appendintoBooks(i, ISBN[i], book_details[i], quantity[i]);
     }
-    ComputerInfoLinkedList* CI = new ComputerInfoLinkedList();
+    ComputerInfoLinkedList *CI = new ComputerInfoLinkedList();
     for (int i = 0; i < maximum_computers_mac; i++)
     {
         bool hasinternetAccess = false;
@@ -590,7 +694,8 @@ void Library()
         }
         CI->append("Windows", "Third Floor", "192.168.1.1", true);
     }
-    LinkedListForFaculty* LL = new LinkedListForFaculty();
+    LinkedListForFaculty *LL = new LinkedListForFaculty();
+    StackforBorrowedbooks *SS = new StackforBorrowedbooks();
     int choice;
     int regno;
     int passwordsArray[3] = {0011, 1122, 3344};
@@ -598,6 +703,7 @@ void Library()
     int password;
     int adminPortal;
     string Faculty;
+    int ISBN;
     cout << endl;
     cout << "\t\t\t\t\t\tLibrary Management System" << endl;
     Sleep(1000);
@@ -682,7 +788,7 @@ void Library()
         // cout << "Which Faculty Do You belong To: ";
         // cin >> Faculty;
         // LL->append(Faculty);
-        
+
         cout << "Please Leave Your Bags In the designated Space" << endl;
         cout << "Please take care of your belongings The Administration will not be responsible for any losses" << endl;
         Sleep(1000);
@@ -704,6 +810,12 @@ void Library()
                 cout << "Displaying You all the books we have" << endl;
                 Sleep(1000);
                 myDoublyLinked->printListBooks();
+                Sleep(1000);
+                cout << "Please Enter The ISBN Number of the book which you want: ";
+                cin >> ISBN;
+                string name = myDoublyLinked->getName(ISBN);
+                // now pushing into the stack the book the user has borrowed
+                SS->push(regno, name, ISBN);
             }
             if (choice == 2)
             {
