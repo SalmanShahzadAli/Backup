@@ -672,29 +672,31 @@ void populateArray()
         usedISBNs.insert(newISBN); // Add to the set of used ISBNs
     }
 }
-class NodeOfBSTRegno
+class NodeOfBSTStdDetails
 {
 public:
     int value;
-    NodeOfBSTRegno *left;
-    NodeOfBSTRegno *right;
+    string emailadress;
+    NodeOfBSTStdDetails *left;
+    NodeOfBSTStdDetails *right;
 
-    NodeOfBSTRegno(int value)
+    NodeOfBSTStdDetails(int value, string emailadress)
     {
         this->value = value;
+        this->emailadress = emailadress;
         left = nullptr;
         right = nullptr;
     }
 };
 
-class BinarySearchTreeRegno
+class BinarySearchTreeStdDetails
 {
 public:
-    NodeOfBSTRegno *root;
+    NodeOfBSTStdDetails *root;
 
 public:
-    BinarySearchTreeRegno() { root = nullptr; }
-    void destroy(NodeOfBSTRegno *currentNode)
+    BinarySearchTreeStdDetails() { root = nullptr; }
+    void destroy(NodeOfBSTStdDetails *currentNode)
     {
         if (currentNode->left)
             destroy(currentNode->left);
@@ -703,18 +705,17 @@ public:
         delete currentNode;
     }
 
-    ~BinarySearchTreeRegno() { destroy(root); }
+    ~BinarySearchTreeStdDetails() { destroy(root); }
 
-    bool insert(int value)
+    bool insert(int value, string emailadress)
     {
-        NodeOfBSTRegno *newNode = new NodeOfBSTRegno(value);
-
+        NodeOfBSTStdDetails *newNode = new NodeOfBSTStdDetails(value, emailadress);
         if (root == nullptr)
         {
             root = newNode;
             return true;
         }
-        NodeOfBSTRegno *temp = root;
+        NodeOfBSTStdDetails *temp = root;
         while (true)
         {
             if (newNode->value == temp->value)
@@ -746,7 +747,7 @@ public:
     {
         if (root == nullptr)
             return false;
-        NodeOfBSTRegno *temp = root;
+        NodeOfBSTStdDetails *temp = root;
         while (temp)
         {
             if (value < temp->value)
@@ -766,15 +767,16 @@ public:
     }
     void BFS()
     {
-        NodeOfBSTRegno *currentNode = root;
-        queue<NodeOfBSTRegno *> myQueue;
+        NodeOfBSTStdDetails *currentNode = root;
+        queue<NodeOfBSTStdDetails *> myQueue;
         myQueue.push(currentNode);
 
         while (myQueue.size() > 0)
         {
             currentNode = myQueue.front();
             myQueue.pop();
-            cout << currentNode->value << endl;
+            cout << "\t\t\t\tRegnumber - " << currentNode->value << endl;
+            cout << "\t\t\t\tEmail - " << currentNode->emailadress << endl;
             if (currentNode->left)
             {
                 myQueue.push(currentNode->left);
@@ -786,10 +788,11 @@ public:
         }
     }
 
-    void DFSPreOrder(NodeOfBSTRegno *currentNode)
+    void DFSPreOrder(NodeOfBSTStdDetails *currentNode)
     {
-        Sleep(500);
-        cout << currentNode->value << endl;
+        cout << endl;
+        cout << "\t\t\t\t\t\tRegnumber - " << currentNode->value << endl;
+        cout << "\t\t\t\t\t\tEmail - " << currentNode->emailadress << endl;
         if (currentNode->left != nullptr)
         {
             DFSPreOrder(currentNode->left);
@@ -802,9 +805,9 @@ public:
 
     void DFSPreOrder() { DFSPreOrder(root); }
 
-    void DFSPostOrder(NodeOfBSTRegno *currentNode)
+    void DFSPostOrder(NodeOfBSTStdDetails *currentNode)
     {
-        Sleep(500);
+        Sleep(100);
         if (currentNode->left != nullptr)
         {
             DFSPostOrder(currentNode->left);
@@ -813,19 +816,22 @@ public:
         {
             DFSPostOrder(currentNode->right);
         }
-        cout << currentNode->value << endl;
+        cout << endl;
+        cout << "\t\t\t\t\t\tRegnumber - " << currentNode->value << endl;
+        cout << "\t\t\t\t\t\tEmail - " << currentNode->emailadress << endl;
     }
 
     void DFSPostOrder() { DFSPostOrder(root); }
 
-    void DFSInOrder(NodeOfBSTRegno *currentNode)
+    void DFSInOrder(NodeOfBSTStdDetails *currentNode)
     {
-        Sleep(500);
         if (currentNode->left != nullptr)
         {
             DFSPreOrder(currentNode->left);
         }
-        cout << currentNode->value << endl;
+        cout << endl;
+        cout << "\t\t\t\t\t\tRegnumber - " << currentNode->value << endl;
+        cout << "\t\t\t\t\t\tEmail - " << currentNode->emailadress << endl;
         if (currentNode->right != nullptr)
         {
             DFSPreOrder(currentNode->right);
@@ -888,14 +894,16 @@ public:
         length++;
     }
 };
-BinarySearchTreeRegno *mybst = new BinarySearchTreeRegno();
+BinarySearchTreeStdDetails *mybst = new BinarySearchTreeStdDetails();
 void Initialisationofregnumber()
 {
+    string email = "";
     // the below code will store 700 regnumbers in the bst.
     int regnumber = 2023000;
     for (int i = 0; i <= 700; i++)
     {
-        mybst->insert(regnumber + i);
+        email = "u" + to_string(regnumber + i) + "@giki.edu.pk";
+        mybst->insert(regnumber + i, email);
     }
 };
 DoublyLinkedListForBooksStorage *myDoublyLinked = new DoublyLinkedListForBooksStorage(0, ISBN[0], book_details[0]);
@@ -950,9 +958,13 @@ void Library()
     int ISBNnumber;
     int SerailNumber;
     int duration;
+    int choiceforadmin;
+    char choiceofprint;
     cout << endl;
     cout << "\t\t\t\t\t\tLibrary Management System" << endl;
     Sleep(1000);
+    cout << "\tGhulam Ishaq Khan Institute OF Engineering Sciences And Technology Topi Swabi Khyber Pukhtoonkhua" << endl;
+    Sleep(500);
     cout << "\t\t\t\t\t\t\tA Project By" << endl;
     Sleep(500);
     cout << "\t\t\tSalman Shahzad Ali\t\t";
@@ -975,7 +987,7 @@ void Library()
         system("CLS");
         cout << endl;
         cout << "\t\t\t\t\t\t\tLibrary Management System" << endl;
-        cout << "\t\tGhulam Ishaq Khan Institute OF Engineering Sciences And Technology Topi Swabi Khyber Pukhtoonkhua" << endl;
+        cout << "\t\t\tGhulam Ishaq Khan Institute OF Engineering Sciences And Technology Topi Swabi Khyber Pukhtoonkhua" << endl;
         cout << "\t\t\t\t\t\t\tWelcome to the Admin Panel" << endl;
         Sleep(500);
         cout << endl;
@@ -1005,7 +1017,25 @@ void Library()
         cout << "\t\t\t\t\t\tLogged in as " << designation << endl;
         Sleep(500);
         cout << "\t\t\t\t\t\tyou may continue to perform the daily activites" << endl;
-        cout << "\t\t\t\t\t\tThe daily activites are as follows" << endl;
+        cout << endl;
+        cout << "\t\t\t\t\t\tTo view the list of all students registered in the institue please press 1: ";
+        cin >> choiceforadmin;
+        if (choiceforadmin == 1)
+        {
+            cout << "\t\t\t\t\t\tAs per Your Request Printing You all The Registered Students" << endl;
+            Sleep(500);
+            mybst->DFSInOrder();
+            Sleep(100);
+            cout << endl;
+            cout << "\t\t\t\t\t\tDo you require the list in printed form ? (Y/N): ";
+            cin >> choiceofprint;
+            if (choiceofprint == 'Y' || choiceofprint == 'y')
+            {
+                Sleep(100);
+                cout << "\t\t\t\t\t\tYou will have the list at hand in 2 minutes" << endl;
+                cout << endl;
+            }
+        }
     }
     else
     {
@@ -1140,7 +1170,8 @@ void Library()
             Sleep(1000);
             cout << "\t\t\tPlease wait we are registering you" << endl;
             Sleep(1000);
-            mybst->insert(regno);
+            string tempname = "u" + to_string(regno) + "@giki.edu.pk";
+            mybst->insert(regno, tempname);
         }
     }
 }
@@ -1158,7 +1189,7 @@ int main()
     do
     {
         Library();
-        cout << "\t\t\tDo you wish to avail anything else from library (Y/N): " << endl;
+        cout << "\t\t\t\t\t\tDo you wish to avail anything else from library (Y/N): ";
         cin >> choice;
     } while (choice != 'N' && choice != 'n');
 
