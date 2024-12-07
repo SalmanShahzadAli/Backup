@@ -938,6 +938,155 @@ void initialisationforcomputerinfo()
         CI->append(maximum_computers_mac + i + 1, "Windows", "Third Floor", "192.168.1.1", true);
     }
 }
+class Nodefororderbook
+{
+public:
+    int urgency_level;
+    string book_name;
+    string author_name;
+    string category;
+    Nodefororderbook *next;
+
+    Nodefororderbook(int urgency_level, string book_name, string author_name, string category)
+    {
+        this->urgency_level = urgency_level;
+        this->author_name = author_name;
+        this->book_name = book_name;
+        this->category = category;
+        next = nullptr;
+    }
+};
+
+class LinkedListBookRequests
+{
+private:
+    Nodefororderbook *head;
+    Nodefororderbook *tail;
+    int length;
+
+public:
+    LinkedListBookRequests() : head(nullptr), tail(nullptr), length(0) {}
+
+    ~LinkedListBookRequests()
+    {
+        Nodefororderbook *temp = head;
+        while (head)
+        {
+            head = head->next;
+            delete temp;
+            temp = head;
+        }
+    }
+
+    void printList()
+    {
+        Nodefororderbook *temp = head;
+        while (temp != nullptr)
+        {
+            Sleep(500);
+            cout << endl;
+            cout << "\t\t\tYour Query Receipt is as follows" << endl;
+            cout << endl;
+            Sleep(500);
+            cout << "\t\t\t|Author Name: " << temp->author_name << endl;
+            cout << "\t\t\t|Book Name: " << temp->book_name << endl;
+            cout << "\t\t\t|Category: " << temp->category << endl;
+            cout << "\t\t\t|Urgency Level: " << temp->urgency_level << endl;
+            temp = temp->next;
+        }
+    }
+
+    void getLength()
+    {
+        cout << "Length: " << length << endl;
+    }
+
+    void append(int urgency_level, string book_name, string author_name, string category)
+    {
+        Nodefororderbook *newNode = new Nodefororderbook(urgency_level, book_name, author_name, category);
+        if (length == 0)
+        {
+            head = newNode;
+            tail = newNode;
+        }
+        else
+        {
+            tail->next = newNode;
+            tail = newNode;
+        }
+        length++;
+    }
+
+    void deleteLast()
+    {
+        if (length == 0)
+            return;
+        Nodefororderbook *temp = head;
+        if (length == 1)
+        {
+            head = nullptr;
+            tail = nullptr;
+        }
+        else
+        {
+            Nodefororderbook *pre = head;
+            while (temp->next)
+            {
+                pre = temp;
+                temp = temp->next;
+            }
+            tail = pre;
+            tail->next = nullptr;
+        }
+        delete temp;
+        length--;
+    }
+
+    Nodefororderbook *get(int index)
+    {
+        if (index < 0 || index >= length)
+            return nullptr;
+        Nodefororderbook *temp = head;
+        for (int i = 0; i < index; ++i)
+        {
+            temp = temp->next;
+        }
+        return temp;
+    }
+};
+void orderBookOnDemand(LinkedListBookRequests &request)
+{
+    string name;
+    string author_name;
+    string category;
+    int urgency_level;
+    cout << endl;
+    cout << "\t\t\tRequesting Book Form is as follows" << endl;
+    Sleep(1000);
+    cout << "\t\t\tPLease Enter the category of the book: " << endl;
+    cout << "\t\t\t\tFor Example" << endl;
+    cout << "\t\t\t\tEducational " << endl;
+    cout << "\t\t\t\tFiction" << endl;
+    cout << "\t\t\t\tNon-Fiction" << endl;
+    cout << "\t\t\t\tPoetry And Drama" << endl;
+    cout << "\t\t\t\tYoung Adult" << endl;
+    cout << "\t\t\t\tCategory: ";
+    cin >> category;
+    cout << "\t\t\tPlease Enter The name of the book: ";
+    cin.ignore(); // To ignore any newline character left by previous inputs
+    getline(cin, name);
+    cout << "\t\t\tPlease Enter The Author Name: ";
+    cin >> author_name;
+    cout << "\t\t\tPlease Enter The Urgency Level between 0-5: ";
+    cin >> urgency_level;
+    while (urgency_level > 5 || urgency_level < 0)
+    {
+        cout << "\t\t\tPlease Enter A Valid Urgency Level between 0-5: ";
+        cin >> urgency_level;
+    }
+    request.append(urgency_level, name, author_name, category);
+}
+LinkedListBookRequests request;
 LinkedListForFaculty *LL = new LinkedListForFaculty();
 StackforBorrowedbooks *SS = new StackforBorrowedbooks();
 void Library()
@@ -1018,8 +1167,15 @@ void Library()
         Sleep(500);
         cout << "\t\t\t\t\t\tyou may continue to perform the daily activites" << endl;
         cout << endl;
-        cout << "\t\t\t\t\t\tTo view the list of all students registered in the institue please press 1: ";
+        Sleep(500);
+        cout << "\t\t\t\t\t\tTo view the list of all students registered in the institue please press 1: " << endl;
+        cout << "\t\t\t\t\t\tTo view the list of ordered books please press 2" << endl;
+        cout << "\t\t\t\t\t\tTo view the list of borrwed books please press 3" << endl;
+        cout << "\t\t\t\t\t\tTo view the list of computer allotments please press 4" << endl;
+        Sleep(1000);
+        cout << "Choice: ";
         cin >> choiceforadmin;
+        Sleep(1000);
         if (choiceforadmin == 1)
         {
             cout << "\t\t\t\t\t\tAs per Your Request Printing You all The Registered Students" << endl;
@@ -1035,6 +1191,12 @@ void Library()
                 cout << "\t\t\t\t\t\tYou will have the list at hand in 2 minutes" << endl;
                 cout << endl;
             }
+        }
+        if (choiceforadmin == 2)
+        {
+            Sleep(1000);
+            cout << "Displaying you the list of ordered books" << endl;
+            Sleep(500);
         }
     }
     else
@@ -1084,14 +1246,15 @@ void Library()
             cout << "\t\t\tRegno successfully Found" << endl;
             cout << endl;
             Sleep(1000);
-            cout << "\t\t\tTo Browse Books press 1 " << endl;
-            cout << "\t\t\tTo Browse Computer Resources press 2 " << endl;
-            cout << "\t\t\tTo Return a borrowed book press 3: " << endl;
+            cout << "\t\t\tTo Browse Books press 1" << endl;
+            cout << "\t\t\tTo Browse Computer Resources press 2" << endl;
+            cout << "\t\t\tTo Return a borrowed book press 3" << endl;
+            cout << "\t\t\tTo Request A Book Which is not present in catalouge press 4" << endl;
             cout << "\t\t\tChoice: ";
             cin >> choice;
             Sleep(1000);
             // the below code is for validation
-            while (choice != 1 && choice != 2 && choice != 3)
+            while (choice != 1 && choice != 2 && choice != 3 && choice != 4)
             {
                 Sleep(1000);
                 cout << "\t\t\tInvalid choice entered" << endl;
@@ -1162,6 +1325,11 @@ void Library()
                 cout << "\t\t\tPlease Enter The ISBN number: ";
                 cin >> ISBNnumber;
                 myDoublyLinked->appendintoBooks(SerailNumber, ISBN, borrowedBook);
+            }
+            if (choice == 4)
+            {
+                orderBookOnDemand(request);
+                request.printList();
             }
         }
         else
