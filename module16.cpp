@@ -121,6 +121,17 @@ string book_details[maximum_entries] = {"I Know Why the Caged Bird Sings - Maya 
                                         "The Immortal Life of Henrietta Lacks – Rebecca Skloot",
                                         "Quiet: The Power of Introverts in a World That Can't Stop Talking – Susan Cain"};
 
+void displayCurrentTime()
+{
+    // Get the current time
+    time_t now = time(0);
+
+    // Convert to local time format
+    char *dt = ctime(&now);
+
+    // Print the formatted time
+    cout << "\t\t\t\t\t\tCurrent local time: " << dt << endl;
+}
 class NodeforComputerAllotment
 {
 public:
@@ -131,7 +142,7 @@ public:
     NodeforComputerAllotment *next;
 
 public:
-    NodeforComputerAllotment(int regnumber, string computertype, int contact, int duration)
+    NodeforComputerAllotment(int regnumber, string computertype, string contact, int duration)
     {
         this->computertype = computertype;
         this->contact = contact;
@@ -165,17 +176,33 @@ public:
         }
     }
 
-    // void printList()
-    // {
-    //     NodeforComputerAllotment *temp = head;
-    //     while (temp != nullptr)
-    //     {
-    //         cout << temp->value << endl;
-    //         temp = temp->next;
-    //     }
-    // }
+    void searchByRegNumber(int regnumber)
+    {
+        NodeforComputerAllotment *temp = head;
+        while (temp != nullptr)
+        {
+            if (temp->regnumber == regnumber)
+            {
+                Sleep(1000);
+                cout << "\t\t\t\tYour Reciept is as follows" << endl;
+                cout << endl;
+                Sleep(1000);
+                cout << "\t\t\t\t---------------------------" << endl;
+                cout << "\t\t\t\t| Computer Type: " << temp->computertype << endl;
+                cout << "\t\t\t\t| Registration Number: " << temp->regnumber << endl;
+                cout << "\t\t\t\t| Contact: " << temp->contact << endl;
+                cout << "\t\t\t\t| Duration: " << temp->duration << " hours" << endl;
+                cout << "\t\t\t\t---------------------------" << endl;
+                Sleep(1000);
+                cout << endl;
+                return;
+            }
+            temp = temp->next;
+        }
+        cout << "No record found with Registration Number: " << regnumber << endl;
+    }
 
-    void append(int regnumber, string computertype, int contact, int duration)
+    void append(int regnumber, string computertype, string contact, int duration)
     {
         NodeforComputerAllotment *newNode = new NodeforComputerAllotment(regnumber, computertype, contact, duration);
         if (length == 0)
@@ -234,6 +261,28 @@ public:
         }
         delete temp;
         length--;
+    }
+    void printList()
+    {
+        if (head == nullptr)
+        {
+            cout << "The list is empty." << endl;
+            return;
+        }
+
+        NodeforComputerAllotment *temp = head;
+        while (temp != nullptr)
+        {
+            Sleep(500);
+            cout << "\t\t\t\t---------------------------" << endl;
+            cout << "\t\t\t\t| Computer Type: " << temp->computertype << endl;
+            cout << "\t\t\t\t| Registration Number: " << temp->regnumber << endl;
+            cout << "\t\t\t\t| Contact: " << temp->contact << endl;
+            cout << "\t\t\t\t| Duration: " << temp->duration << " hours" << endl;
+            cout << "\t\t\t\t---------------------------" << endl;
+            Sleep(500);
+            temp = temp->next;
+        }
     }
 };
 class Nodeforborrowedbooks
@@ -375,14 +424,14 @@ public:
         NodeofComputerInfo *temp = head;
         while (temp)
         {
-            // Sleep(100);
-            cout << "---------------------------" << endl;
-            cout << "|" << " Serial-Number: " << temp->serialNumber << endl;
-            cout << "|" << " Location: " << temp->location << endl;
-            cout << "|" << " Type: " << temp->type << endl;
-            cout << "|" << " IP Address: " << temp->ip_address << endl;
-            cout << "|" << " Internet Access: " << (temp->internet_access ? "Yes" : "No") << endl; // Print internet access
-            cout << "---------------------------" << endl;                                         // Separator for readability
+            Sleep(50);
+            cout << "\t\t\t\t---------------------------" << endl;
+            cout << "\t\t\t\t|" << " Serial-Number: " << temp->serialNumber << endl;
+            cout << "\t\t\t\t|" << " Location: " << temp->location << endl;
+            cout << "\t\t\t\t|" << " Type: " << temp->type << endl;
+            cout << "\t\t\t\t|" << " IP Address: " << temp->ip_address << endl;
+            cout << "\t\t\t\t|" << " Internet Access: " << (temp->internet_access ? "Yes" : "No") << endl; // Print internet access
+            cout << "\t\t\t\t---------------------------" << endl;                                         // Separator for readability
             temp = temp->next;
         }
     }
@@ -1089,6 +1138,7 @@ void orderBookOnDemand(LinkedListBookRequests &request)
 LinkedListBookRequests request;
 LinkedListForFaculty *LL = new LinkedListForFaculty();
 StackforBorrowedbooks *SS = new StackforBorrowedbooks();
+LinkedListforcomputerAllotment *CA = new LinkedListforcomputerAllotment();
 void Library()
 {
     int choice;
@@ -1102,7 +1152,6 @@ void Library()
     string phonenumber;
     char choiceofcontinuity;
     string typeofcomputer;
-    char choiceofInternet;
     string borrowedBook;
     int ISBNnumber;
     int SerailNumber;
@@ -1138,6 +1187,7 @@ void Library()
         cout << "\t\t\t\t\t\t\tLibrary Management System" << endl;
         cout << "\t\t\tGhulam Ishaq Khan Institute OF Engineering Sciences And Technology Topi Swabi Khyber Pukhtoonkhua" << endl;
         cout << "\t\t\t\t\t\t\tWelcome to the Admin Panel" << endl;
+        displayCurrentTime();
         Sleep(500);
         cout << endl;
         cout << "\t\t\t\t\t\tPlease Enter Your Designation Please: ";
@@ -1173,7 +1223,7 @@ void Library()
         cout << "\t\t\t\t\t\tTo view the list of borrwed books please press 3" << endl;
         cout << "\t\t\t\t\t\tTo view the list of computer allotments please press 4" << endl;
         Sleep(1000);
-        cout << "Choice: ";
+        cout << "\t\t\t\t\t\tChoice: ";
         cin >> choiceforadmin;
         Sleep(1000);
         if (choiceforadmin == 1)
@@ -1195,8 +1245,23 @@ void Library()
         if (choiceforadmin == 2)
         {
             Sleep(1000);
-            cout << "Displaying you the list of ordered books" << endl;
+            cout << "\t\t\t\t\t\tDisplaying you the list of ordered books" << endl;
             Sleep(500);
+            request.printList();
+        }
+        if (choiceforadmin == 3)
+        {
+            Sleep(1000);
+            cout << "\t\t\t\t\t\tDisplaying you the list of borrowed books" << endl;
+            Sleep(500);
+            SS->printStack();
+        }
+        if (choiceforadmin == 4)
+        {
+            Sleep(1000);
+            cout << "\t\t\t\t\t\tDisplaying you the list of computer allotments" << endl;
+            Sleep(500);
+            CA->printList();
         }
     }
     else
@@ -1304,12 +1369,29 @@ void Library()
                 Sleep(1000);
                 CI->printList();
                 Sleep(1000);
-                cout << "Please Enter The Type of Computer you would like to use: ";
+                cout << "\t\t\t\tPlease Enter The Type of Computer you would like to use: ";
                 cin >> typeofcomputer;
-                cout << "Do You require Internet Access ? (Y/N): ";
-                cin >> choiceofInternet;
-                cout << "Please Enter The Duration For Which You want to use ? ";
+                cout << "\t\t\t\tPlease Enter The Duration for which you want to use the computer: ";
                 cin >> duration;
+                cout << "\t\t\t\tPlease Enter Your Reg Number: ";
+                cin >> regno;
+                cout << "\t\t\t\tPlease Enter Your Contact Number: ";
+                cin >> phonenumber;
+                CA->append(regno, typeofcomputer, phonenumber, duration);
+                CA->searchByRegNumber(regno);
+                if (typeofcomputer == "windows" || typeofcomputer == "Windows")
+                {
+                    CI->deleteLast();
+                }
+                else if (typeofcomputer == "Mac" || typeofcomputer == "mac")
+                {
+
+                    CI->deleteFirst();
+                }
+                Sleep(1000);
+                cout << endl;
+                cout << "\t\t\t\tDisplaying Catalouge After Alloting Computer" << endl;
+                CI->printList();
             }
             if (choice == 3)
             {
@@ -1357,7 +1439,7 @@ int main()
     do
     {
         Library();
-        cout << "\t\t\t\t\t\tDo you wish to avail anything else from library (Y/N): ";
+        cout << "\t\t\t\tDo you wish to avail anything else from library (Y/N): ";
         cin >> choice;
     } while (choice != 'N' && choice != 'n');
 
